@@ -3,6 +3,16 @@ while true do
     local fieldLength = 18
     local fieldWidth = 18
 
+    -- array of items with their full grown age
+    local crops = {
+        ["minecraft:wheat"] = 7,
+        ["minecraft:potatoes"] = 7,
+        ["minecraft:carrots"] = 7,
+        ["minecraft:beetroots"] = 3,
+        ["farmersdelight:cabbages"] = 7,
+        ["farmersdelight:tomatoes"] = 3
+    }
+
     -- Check if refuel is needed
     if turtle.getFuelLevel() < (fieldLength * fieldWidth) then
         print("Turtle needs to be refueled")
@@ -33,14 +43,21 @@ while true do
         sleep(1)
     end
 
-    -- Main part of the script to farm the 18x9 field
+    -- Main part of the script to farm the field
     turtle.select(2)
     turtle.forward(1)  -- Move the turtle onto the field to start
 
     for row = 1, fieldWidth do
         for i = 1, fieldLength do
-            turtle.digDown()
-            turtle.placeDown()
+            -- Inspect the block under the turtle
+            local success, data = turtle.inspectDown()
+            if success then
+                -- compare the crop under the turtle to the crops array
+                if crops[data.name] and data.state.age == crops[data.name] then
+                    turtle.digDown()
+                    turtle.placeDown()
+                end
+            end
             if i < fieldLength then
                 turtle.forward(1)
             end
@@ -79,10 +96,10 @@ while true do
         end
     end
 
-    -- Reboot
-    -- os.reboot(1)
+    -- Pause for 45 minutes before running again
+    print("Sleeping for 45 minutes...")
+    sleep(2700)
 
-    -- Pause for 60 minutes before running again
-    print("Sleeping for 60 minutes...")
-    sleep(3600)
+    -- exit the program
+    -- return
 end
